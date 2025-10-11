@@ -39,7 +39,7 @@ class HoldController extends Controller
                 $hold = Hold::create([
                     'product_id' => $productId,
                     'quantity' => $quantity,
-                    'expires_at' => now()->addMinutes(2), // TODO: Make configurable
+                    'expires_at' => now()->addMinutes(config('constants.hold_expiry_minutes'),2), // TODO: Make configurable
                 ]);
 
                 // TODO: Create to update hold status to 'expired' after expiration time using a scheduled job
