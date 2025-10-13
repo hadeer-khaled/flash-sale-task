@@ -50,10 +50,10 @@ class PaymentController extends Controller
                 } 
                 else {
                     $order->update(['status' => 'cancelled']);
-                    $order->hold->product->increment('available_stock', $order->hold->quantity);
+                    $order->product->increment('available_stock', $order->quantity);
                     return response()->json([
                         'status' => $status
-                    ],400);                
+                    ],200);                
                 }
             });
         } catch (Exception $e) {

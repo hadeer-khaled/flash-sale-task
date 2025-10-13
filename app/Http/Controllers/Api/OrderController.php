@@ -27,8 +27,9 @@ class OrderController extends Controller
                 }
 
                 $order = Order::create([
-                    'hold_id' => $holdId,
                     'product_id' => $hold->product_id,
+                    'hold_id' => $holdId,
+                    'quantity' => $hold->quantity,
                     'status' => 'pending',
                 ]);
 
