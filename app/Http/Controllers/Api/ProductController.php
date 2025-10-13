@@ -9,7 +9,7 @@ class ProductController extends Controller
 {
     public function show(int $id)
     {
-        $product = Product::find($id)->select('id', 'name', 'price', 'available_stock')->first();
+        $product = Product::select('id', 'name', 'price', 'available_stock')->find($id);
         
         if (!$product) {
             return response()->json([
