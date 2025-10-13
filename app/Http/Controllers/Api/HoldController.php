@@ -42,7 +42,6 @@ class HoldController extends Controller
                     'expires_at' => now()->addMinutes(config('constants.hold_expiry_minutes', 2)),
                 ]);
 
-                // TODO: update hold status to 'expired' after expiration time using a scheduled job
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Product held successfully',
