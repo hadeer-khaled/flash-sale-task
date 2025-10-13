@@ -21,7 +21,7 @@ Schedule::call(function () {
                 $hold->product->increment('available_stock', $hold->quantity);
                 $hold->update(['status' => 'expired']);
             }
-            Log::info("{$deletedHoldCount} expired holds successfully deleted");
+            Log::info("{$deletedHoldCount} expired holds successfully processed");
         } else {
             Log::info('No expired holds found');  
         }
@@ -30,11 +30,12 @@ Schedule::call(function () {
 
 
 Schedule::call(function () {
-    $deletedCount = IdempotencyLog::where('created_at', '<', now()->subDays(1))->delete();
+    $cleanupDays = config('schedule.idempotency_cleanup_days');
+    $deletedCount = IdempotencyLog::where('created_at', '<', now()->subDays($cleanupDays))->delete();
     if($deletedCount){
         Log::info("{$deletedCount} expired idempotency keys successfully deleted");
     }
     else{
         Log::info('No expired idempotency keys found');  
     }
-})->everyMinute();  
+})->cron(config('schedule.idempotency_cron'));
