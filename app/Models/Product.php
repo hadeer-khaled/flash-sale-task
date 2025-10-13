@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 class Product extends Model
 {
@@ -20,4 +21,12 @@ class Product extends Model
         return $this->hasMany(Hold::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function (self $product) {
+            Cache::forget("product:{$product->id}");
+        });
+    }
 }

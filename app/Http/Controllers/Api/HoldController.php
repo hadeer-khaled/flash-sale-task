@@ -34,7 +34,8 @@ class HoldController extends Controller
                     ], 400);
                 }
 
-                $product->decrement('available_stock', $quantity);
+                $product->available_stock -= $quantity;
+                $product->save();  // Triggers boot() saved -> forget cache
 
                 $hold = Hold::create([
                     'product_id' => $productId,
