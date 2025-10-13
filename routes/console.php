@@ -10,20 +10,21 @@ use Illuminate\Support\Facades\Schedule;
 
 Schedule::call(function () {
     DB::transaction(function () {
-        $expiredHolds = Hold::where('status', 'active')
-            ->where('expires_at', '<', now())
-            ->with('product')
-            ->get();
+        $updatedCount = Hold::where('status', 'active')  // update holds in bulk instead of one by one
+                ->where('expires_at', '<', now())
+                ->update(['status' => 'expired', 'updated_at' => now()]);
 
-        $deletedHoldCount = $expiredHolds->count();
-        if ($deletedHoldCount) {
-            foreach ($expiredHolds as $hold) {
-                $hold->product->increment('available_stock', $hold->quantity);
-                $hold->update(['status' => 'expired']);
-            }
-            Log::info("{$deletedHoldCount} expired holds successfully processed");
+        if ($updatedCount > 0) {
+            Hold::where('status', 'expired')  
+                ->chunkById(100, function ($holds) {  
+                    foreach ($holds as $hold) {
+                        $hold->product->increment('available_stock', $hold->quantity);
+                    }
+                });
+
+            Log::info("{$updatedCount} expired holds successfully processed");
         } else {
-            Log::info('No expired holds found');  
+            Log::debug('No expired holds found');
         }
     });
 })->everyMinute();  
