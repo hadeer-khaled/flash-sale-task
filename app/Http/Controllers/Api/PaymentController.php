@@ -19,8 +19,6 @@ class PaymentController extends Controller
         $status = $request->status;
 
         try {
-            //TODO:: Create index on `key` column for better performance
-            //TODO:: Clean up old records periodically using scheduled job (Assume keep them for a specific duration)
             $processed = IdempotencyLog::where('key', $idempotencyKey)->exists();
 
             if ($processed) {
